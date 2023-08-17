@@ -148,9 +148,10 @@ int printMonthHeader(int num, int year)
         break;
     }
 
-    // if(isLeapYear(year)){
-
-    // }
+    if (isLeapYear(year) && numDays == 28)
+    {
+        numDays = 29;
+    }
 
     return numDays;
 }
@@ -158,12 +159,21 @@ int printMonthHeader(int num, int year)
 void printYearCalender(int year, int startingDay)
 {
 
-    for (int i = 1; i <= 12; i++)
+    for (int i = 1; i <= 5; i++)
     {
+        cout << endl;
         int numDays = printMonthHeader(i, year);
         int lastDayOfMonth = printMonthCalender(numDays, startingDay);
-        cout << "lastDayOfMonth: " << lastDayOfMonth << endl;
-        startingDay = lastDayOfMonth;
+        if (lastDayOfMonth == 7)
+        {
+            startingDay = 1;
+        }
+        else
+        {
+            startingDay = lastDayOfMonth;
+        }
+        // cout << "lastDayOfMonth: " << lastDayOfMonth << endl;
+        // startingDay = lastDayOfMonth;
     }
     cout << endl;
 }
