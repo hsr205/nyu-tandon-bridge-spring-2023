@@ -1,32 +1,47 @@
 #include <iostream>
-#include <cmath>
+#include <vector>
+#include <numeric>
 
 using namespace std;
 
-bool isPerfect(int num)
+vector<int> analyzeDividors(int num, int &outCountDivs, int &outSumDivs)
 {
 
-    int sum = 0;
+    vector<int> result;
 
     for (int i = 1; i < num; i++)
     {
-        // if (num % i == 0)
-        // {
-        sum += i;
-        if (sum == num)
+        if (num % i == 0)
         {
-            return 1;
+            result.push_back(i);
         }
-        // }
     }
 
-    return 0;
+    return result;
 }
 
-bool isAmicableNum(int originalNum, int sumOfDivisors)
+int getUserInput()
 {
 
-    if (originalNum == sumOfDivisors)
+    int inputValue;
+
+    cout << "Please enter an integer greater than 2: " << endl;
+    cin >> inputValue;
+
+    while (inputValue < 2)
+    {
+        cout << "That value is not greater than 2." << endl;
+        cout << "Please enter an integer greater than 2: " << endl;
+        cin >> inputValue;
+    }
+
+    return inputValue;
+}
+
+bool isPerfect(int iterableNum, int sumValue)
+{
+
+    if (iterableNum == sumValue)
     {
         return 1;
     }
@@ -34,42 +49,39 @@ bool isAmicableNum(int originalNum, int sumOfDivisors)
     return 0;
 }
 
-void analyzeDividors(int num, int &outCountDivs, int &outSumDivs)
+void getResult()
 {
+    int inputValue = getUserInput();
 
-    for (int i = 1; i < num; i++)
+    int outSumDivs1 = 0;
+    int outSumDivs2 = 0;
+    int outCountDivs1 = 0;
+    int outCountDivs2 = 0;
+
+    for (int i = 2; i <= inputValue; i++)
     {
-        if (num % i == 0)
+
+        vector<int> resultVector1 = analyzeDividors(i, outCountDivs1, outSumDivs1);
+        int sum1 = accumulate(resultVector1.begin(), resultVector1.end(), 0);
+
+        vector<int> resultVector2 = analyzeDividors(sum1, outCountDivs2, outSumDivs2);
+        int sum2 = accumulate(resultVector2.begin(), resultVector2.end(), 0);
+
+        if (isPerfect(i, sum1))
         {
-            if (isPerfect(num))
-            {
-                // cout << num << endl;
-                cout << "The integer " << num << " is a perfect number" << endl;
-            }
-            // cout << "i: " << i << endl;
-            outCountDivs++;
-            outSumDivs += i;
+            cout << i << " is a perfect number." << endl;
         }
-    }
 
-    if (isAmicableNum(num, outSumDivs))
-    {
-        cout << "The two integers: " << num << " and " << outSumDivs << " are amicable numbers." << endl;
+        else if (i == sum2)
+        {
+            cout << "The integers " << i << " and " << sum1 << " are amicable." << endl;
+        }
     }
 }
 
 int main()
 {
-    int inputValue = 6;
-    int outCountDivs = 0;
-    int outSumDivs = 0;
 
-    // bool isResult = isPerfect(inputValue);
-
-    analyzeDividors(inputValue, outCountDivs, outSumDivs);
-
-    // cout << "outCountDivs: " << outCountDivs << endl;
-    // cout << "outSumDivs: " << outSumDivs << endl;
-
+    getResult();
     return 0;
 }
