@@ -2,24 +2,23 @@
 
 using namespace std;
 
-const string MON = "MON";
-const string TUE = "TUE";
-const string WED = "WED";
-const string THR = "THR";
-const string FRI = "FRI";
-const string SAT = "SAT";
-const string SUN = "SUN";
-
 void printDaysOfWeek()
 {
 
-    cout << MON << "\t"
-         << TUE << "\t"
-         << WED << "\t"
-         << THR << "\t"
-         << FRI << "\t"
-         << SAT << "\t"
-         << SUN << "\t"
+    cout << "MON"
+         << "\t"
+         << "TUE"
+         << "\t"
+         << "WED"
+         << "\t"
+         << "THR"
+         << "\t"
+         << "FRI"
+         << "\t"
+         << "SAT"
+         << "\t"
+         << "SUN"
+         << "\t"
          << endl;
 }
 
@@ -52,15 +51,6 @@ int printMonthCalender(int numOfDays, int startingDay)
             lastDay++;
         }
     }
-
-    // cout << endl;
-    // cout << endl;
-
-    // cout << "newLineCounter: " << newLineCounter << endl;
-
-    // lastDayOfMonth = lastDay;
-
-    // cout << "lastDayOfMonth: " << lastDayOfMonth << endl;
 
     return lastDay;
 }
@@ -159,7 +149,7 @@ int printMonthHeader(int num, int year)
 void printYearCalender(int year, int startingDay)
 {
 
-    for (int i = 1; i <= 5; i++)
+    for (int i = 1; i <= 12; i++)
     {
         cout << endl;
         int numDays = printMonthHeader(i, year);
@@ -172,23 +162,19 @@ void printYearCalender(int year, int startingDay)
         {
             startingDay = lastDayOfMonth;
         }
-        // cout << "lastDayOfMonth: " << lastDayOfMonth << endl;
-        // startingDay = lastDayOfMonth;
     }
     cout << endl;
 }
 
 int main()
 {
-    // int lastDayOfMonth = printMonthCalender(31, 4);
-    // cout << endl;
-    // cout << "lastDayOfMonth: " << lastDayOfMonth << endl;
 
-    // int year = 700;
-    // cout << year << " is leap year: " << isLeapYear(year) << endl;
-
-    int year = 2016;
-    int startingDay = 5;
+    int year;
+    int startingDay;
+    cout << "Please enter the year (i.e. 2016) and starting day (1-7) of the calendar you intend to print: " << endl;
+    cin >> year;
+    cin >> startingDay;
+    
     printYearCalender(year, startingDay);
 
     return 0;
