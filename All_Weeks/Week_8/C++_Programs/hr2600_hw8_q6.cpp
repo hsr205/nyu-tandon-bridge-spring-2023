@@ -1,52 +1,74 @@
 #include <iostream>
 #include <string>
+#include <cctype>
 
 using namespace std;
 
-void getUserInput()
+bool isAllDigits(string inputString)
 {
-    string inputStr = "My userid is john17 and my 4 digit pin is 1234 which is secret";
-    cout << inputStr << endl;
+    for (char character : inputString)
+    {
+        if (!isdigit(character))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
 
+string replaceDigitStrings(string inputText)
+{
     int indexStart = 0;
     int indexPosition = 0;
     string currentWord;
     string lastWord;
     string newSentence;
 
-    for (int i = 0; i < inputStr.length(); i++)
+    for (int i = 0; i < inputText.length(); i++)
     {
-        if (inputStr[i] == ' ')
+        if (inputText[i] == ' ')
         {
-            currentWord = inputStr.substr(indexStart, i - indexStart);
+            currentWord = inputText.substr(indexStart, i - indexStart);
 
-            indexPosition = currentWord.find_first_of("0123456789");
-            if (indexPosition == 0)
+            if (isAllDigits(currentWord))
             {
                 currentWord = string(currentWord.length(), 'x');
             }
+
             newSentence += currentWord + " ";
             indexStart = i + 1;
         }
     }
 
-    indexPosition = 0;
+    lastWord = inputText.substr(indexStart);
 
-    lastWord = inputStr.substr(indexStart);
-
-    indexPosition = lastWord.find_first_of("0123456789");
-
-    if (indexPosition == 0)
+    if (isAllDigits(lastWord))
     {
         lastWord = string(lastWord.length(), 'x');
     }
 
-    cout << newSentence + lastWord << endl;
+    newSentence = newSentence + lastWord;
+
+    return newSentence;
+}
+
+void getUserInput()
+{
+
+    string inputText;
+
+    cout << "Please enter a line of text: " << endl;
+    getline(cin, inputText);
+
+    string newSentence = replaceDigitStrings(inputText);
+
+    cout << newSentence << endl;
 }
 
 int main()
 {
 
     getUserInput();
+
     return 0;
 }
