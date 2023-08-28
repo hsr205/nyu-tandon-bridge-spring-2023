@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <algorithm>
 #include <string>
 #include <cstdlib>
 #include <ctime>
@@ -7,32 +7,6 @@
 
 using namespace std;
 
-int pinNum = 12345;
-
-int *intToArray(int inputValue)
-{
-
-    int cnt = 0;
-
-    vector<int> collection;
-    while (inputValue > 0)
-    {
-        int digit = inputValue % 10;
-
-        inputValue /= 10;
-        collection.push_back(digit);
-    }
-
-    int *arr = new int[collection.size()];
-
-    for (int i = (collection.size() - 1); i >= 0; i--)
-    {
-        arr[cnt] = collection[i];
-        cnt++;
-    }
-
-    return arr;
-}
 map<int, int> getMap()
 {
     srand(static_cast<int>(time(nullptr)));
@@ -47,92 +21,116 @@ map<int, int> getMap()
     return map;
 }
 
-void getResultVector(int digit, vector<int> &collection)
+void printPinSequence(map<int, int> map)
 {
-    map<int, int> map = getMap();
+    cout << "PIN: ";
 
     for (const auto &keyValue : map)
     {
-        if (digit == keyValue.first)
+        cout << keyValue.first << "  ";
+    }
+    cout << endl;
+}
+
+void printRandomNumSequence(map<int, int> map)
+{
+    cout << "NUM: ";
+
+    for (const auto &keyValue : map)
+    {
+        cout << keyValue.second << "  ";
+    }
+    cout << endl;
+}
+
+vector<int> getIntVector(int inputPin)
+{
+    vector<int> result;
+
+    while (inputPin > 0)
+    {
+
+        int digit = inputPin % 10;
+
+        result.push_back(digit);
+
+        inputPin /= 10;
+    }
+
+    return result;
+}
+
+bool isValidPin(int inputPin, int actualPin, map<int, int> map)
+{
+    int cnt = 0;
+    vector<int> actualPinVector = getIntVector(actualPin);
+    vector<int> inputPinVector = getIntVector(inputPin);
+
+    reverse(actualPinVector.begin(), actualPinVector.end());
+    reverse(inputPinVector.begin(), inputPinVector.end());
+
+    for (const auto &keyValue : map)
+    {
+        for (int i = 0; i < actualPinVector.size(); i++)
         {
-            collection.push_back(keyValue.second);
-            cout << digit << " -> " << keyValue.second << endl;
+            if (keyValue.first == actualPinVector[i])
+            {
+                if (keyValue.second == inputPinVector[i])
+                {
+                    cnt++;
+                    if (cnt == 5)
+                    {
+                        return 1;
+                    }
+                }
+            }
         }
     }
+    return 0;
 }
 
-vector<int> getCodedPin(int inputValue)
-{
-
-    vector<int> collection;
-
-    int *codedPin = intToArray(inputValue);
-
-    for (int i = 0; i < 5; i++)
-    {
-        int digit = codedPin[i];
-        getResultVector(digit, collection);
-    }
-
-    return collection;
-}
-
-void printInterfaceValues()
+void displayInterfaceValues()
 {
     map<int, int> map = getMap();
 
-    cout << "PIN: ";
-    for (const auto &keyValue : map)
-    {
-        cout << keyValue.first << string(2, ' ');
-    }
-    cout << endl;
-
-    cout << "NUM: ";
-    for (const auto &keyValue : map)
-    {
-        cout << keyValue.second << string(2, ' ');
-    }
-    cout << endl;
+    printPinSequence(map);
+    printRandomNumSequence(map);
 }
 
-void getUserInput()
+int getUserInput()
 {
 
-    int inputValue;
+    int inputPin;
 
     cout << "Please enter your PIN according to the following mapping: " << endl;
-    printInterfaceValues();
 
-    cin >> inputValue;
+    displayInterfaceValues();
 
-    vector<int> codedPinVector = getCodedPin(pinNum);
-    int *inputValueArray = intToArray(inputValue);
+    cin >> inputPin;
 
-    for (int i = 0; i < 5; i++)
+    return inputPin;
+}
+
+void getResult()
+{
+    int actualPin = 12345;
+    map<int, int> map = getMap();
+    int inputPin = getUserInput();
+
+    if (isValidPin(inputPin, actualPin, map))
     {
-        if (codedPinVector[i] != inputValueArray[i])
-        {
-            cout << "Your PIN is incorrect" << endl;
-        }
-        else
-        {
-            cout << "Your PIN is correct" << endl;
-        }
+        cout << "Your PIN is correct" << endl;
+    }
+    else
+    {
+        cout << "Your PIN is not correct" << endl;
     }
 }
 
 int main()
 {
-    // vector<int> codedPin = getCodedPin(pinNum);
 
-    // cout << "Coded Pin: ";
-    // for (int element : codedPin)
-    // {
-    //     cout << element;
-    // }
-    // cout << endl;
-    getUserInput();
+    getResult();
 
     return 0;
 }
