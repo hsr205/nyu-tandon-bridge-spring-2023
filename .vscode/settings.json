@@ -64,6 +64,8 @@
         "concepts": "cpp",
         "numeric": "cpp",
         "algorithm": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "__tree": "cpp",
+        "random": "cpp"
     }
 }
