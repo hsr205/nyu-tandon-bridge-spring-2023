@@ -41,12 +41,13 @@ void testGetPosNums1Method()
     delete[] resultArray;
 }
 
-int *getPosNums2(int *arr, int arrSize, int *outPosArrSize)
+int *getPosNums2(int *arr, int arrSize, int *outPosArrSizePtr)
 {
 
-    int *resultArray = new int[ARRAY_SIZE];
+    int *resultArray = new int[*outPosArrSizePtr];
 
     int tempValue = 0;
+    int *ptr = &tempValue;
 
     for (int i = 0; i < arrSize; i++)
     {
@@ -57,33 +58,31 @@ int *getPosNums2(int *arr, int arrSize, int *outPosArrSize)
         }
     }
 
-    // cout << "tempValue: " << tempValue << endl;
-    outPosArrSize = &tempValue;
-    // cout << "*outPosArrSize: " << *outPosArrSize << endl;
-
     return resultArray;
 }
 
-// TODO: Complete this
 void testGetPosNums2Method()
 {
     int tempValue = 0;
-    int *outPosArrSize = &tempValue;
+    int *outPosArrSizePtr = &tempValue;
 
     int arr[ARRAY_SIZE] = {3, -1, -3, 0, 6, 4};
 
-    cout << "outPosArrSize: " << *outPosArrSize << endl;
+    cout << "*outPosArrSizePtr: " << *outPosArrSizePtr << endl;
 
-    int *resultArray = getPosNums2(arr, ARRAY_SIZE, outPosArrSize);
+    int *resultArray = getPosNums2(arr, ARRAY_SIZE, outPosArrSizePtr);
 
-    // cout << "tempValue: " << tempValue << endl;
-    cout << "outPosArrSize: " << outPosArrSize << endl;
-    cout << "&outPosArrSize: " << &outPosArrSize << endl;
-    cout << "*outPosArrSize: " << *outPosArrSize << endl;
+    for (int i = 0; i < ARRAY_SIZE; i++)
+    {
+        if (arr[i] > 0)
+        {
+            tempValue++;
+        }
+    }
 
-    // cout << "outPosArrSize: " << *outPosArrSize << endl;
+    cout << "*outPosArrSizePtr: " << *outPosArrSizePtr << endl;
 
-    for (int i = 0; i < *outPosArrSize; i++)
+    for (int i = 0; i < *outPosArrSizePtr; i++)
     {
         cout << "resultArray[i]: " << resultArray[i] << endl;
     }
@@ -110,9 +109,6 @@ int *getPosNums3(int *arr, int arrSize, int *&outPosArr, int &outPosArrSize)
     return outPosArr;
 }
 
-/*
-TODO: Review this for learning pointers
-*/
 void testGetPosNums3Method()
 {
     int tempValue = 0;
@@ -135,9 +131,6 @@ void testGetPosNums3Method()
     delete[] resultArray;
 }
 
-/*
-TODO: Review this for learning pointers
-*/
 int *getPosNums4(int *arr, int arrSize, int **outPosArrPointer, int &outPosArrSize)
 {
 
@@ -180,13 +173,35 @@ void testGetPosNums4Method()
     delete[] resultArray;
 }
 
+void printResults()
+{
+    cout << "Testing getPosNums1() method: " << endl;
+    cout << "---------------------------------" << endl;
+    testGetPosNums1Method();
+    cout << "---------------------------------" << endl;
+    cout << endl;
+
+    cout << "Testing getPosNums2() method: " << endl;
+    cout << "---------------------------------" << endl;
+    testGetPosNums2Method();
+    cout << "---------------------------------" << endl;
+    cout << endl;
+
+    cout << "Testing getPosNums3() method: " << endl;
+    cout << "---------------------------------" << endl;
+    testGetPosNums3Method();
+    cout << "---------------------------------" << endl;
+    cout << endl;
+
+    cout << "Testing getPosNums4() method: " << endl;
+    cout << "---------------------------------" << endl;
+    testGetPosNums4Method();
+    cout << "---------------------------------" << endl;
+    cout << endl;
+}
+
 int main()
 {
-
-    // testGetPosNums1Method();
-    // testGetPosNums2Method();
-    // testGetPosNums3Method();
-    testGetPosNums4Method();
-
+    printResults();
     return 0;
 }
