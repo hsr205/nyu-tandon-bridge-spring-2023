@@ -18,7 +18,6 @@ string getUserInput()
 vector<string> getStringVector(string inputText)
 {
 
-    // string inputText = "I say Hi.";
     int indexStart = 0;
     int indexPosition = 0;
     string currentWord;
@@ -50,7 +49,7 @@ void printResult(vector<string> strCollection, map<char, int> map)
 
     for (const auto &element : map)
     {
-        cout << element.first << "\t" << element.second << endl;
+        cout << element.second << "\t" << element.first << endl;
     }
 }
 
@@ -91,7 +90,7 @@ int main()
     string userInput = getUserInput();
     vector<string> stringVector = getStringVector(userInput);
     map<char, int> mapResult = getMapResult(stringVector);
-    
+
     printResult(stringVector, mapResult);
     return 0;
 }
