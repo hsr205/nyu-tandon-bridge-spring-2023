@@ -130,12 +130,30 @@ void test3()
     delete[] resultArray;
 }
 
+void test4()
+{
+    cout << "Test Number 4:" << endl;
+    cout << "-----------------------------------" << endl;
+    const int ARRAY_SIZE = 6;
+    int arr[ARRAY_SIZE] = {4, 2, 5, 1, 5, 7};
+
+    int *resultArray = oddsKeepEvensFlip(arr, ARRAY_SIZE);
+
+    printResult(arr, resultArray, ARRAY_SIZE);
+
+    cout << "-----------------------------------" << endl;
+    cout << endl;
+
+    delete[] resultArray;
+}
+
 int main()
 {
 
     test1();
     test2();
     test3();
+    test4();
 
     return 0;
 }
