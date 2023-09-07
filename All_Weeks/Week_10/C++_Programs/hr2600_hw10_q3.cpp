@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <list>
 
@@ -84,28 +85,24 @@ void printResult1(int searchNum, vector<int> searchNumLineAppearences)
 }
 void printResult2(int searchNum, list<int> searchNumLineAppearences)
 {
+    string resultString = to_string(searchNum) + " shows in lines ";
 
     if (searchNumLineAppearences.size() > 0)
     {
-        cout << searchNum << " shows in lines ";
-
         for (auto iterator = searchNumLineAppearences.begin(); iterator != searchNumLineAppearences.end(); iterator++)
         {
-            if (iterator == searchNumLineAppearences.end())
-            {
-                cout << *iterator << ".";
-            }
-            else
-            {
-                cout << *iterator << ", ";
-            }
+
+            resultString.append(to_string(*iterator) + ", ");
         }
-        cout << endl;
+
+        resultString[resultString.size() - 2] = '.';
+        cout << resultString << endl;
     }
 
     else
     {
-        cout << searchNum << " was not found." << endl;
+        resultString = to_string(searchNum) + " was not found.";
+        cout << resultString << endl;
     }
 }
 
@@ -166,8 +163,14 @@ void main2()
 
 int main()
 {
-
+    cout << "Testing main1(): " << endl;
+    cout << "-------------------------------------------" << endl;
     main1();
+
+    cout << endl;
+    
+    cout << "Testing main2(): " << endl;
+    cout << "-------------------------------------------" << endl;
     main2();
     return 0;
 }
