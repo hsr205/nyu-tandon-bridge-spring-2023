@@ -69,7 +69,7 @@ void printRuler(int n)
         What the question is asking for is the following:
 
         (1) If half of "n^2" then print out "n" number of "-"
-        (2) If "n^2" / "n" can half a simplified fraction then print out either n/2 or n-1 number of "-"
+        (2) If "n^2" / "n" can have a simplified fraction then print out either n/2 or n-1 number of "-"
         (3) Else print out a single "-"
     
     */
