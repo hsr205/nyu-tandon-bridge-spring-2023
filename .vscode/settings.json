@@ -67,6 +67,7 @@
         "map": "cpp",
         "__tree": "cpp",
         "random": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "set": "cpp"
     }
 }

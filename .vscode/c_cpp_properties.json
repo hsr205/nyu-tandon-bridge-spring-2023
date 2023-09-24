@@ -3,7 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/local/Caskroom/miniconda/base/include/c++/v1/"
             ],
             "defines": [],
             "macFrameworkPath": [
