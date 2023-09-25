@@ -6,129 +6,161 @@ class Money
 {
 
 private:
-    int cents;
-    long dollars;
+    double amount;
 
 public:
-    Money();
-
-    Money(long dollars)
+    Money()
     {
-        this->dollars = dollars;
+        amount = 0.0;
+    };
+    Money(double amount)
+    {
+        this->amount = amount;
     };
 
-    Money(long dollars, int cents)
+    double getAmount() const
     {
-        this->dollars = dollars;
-        this->cents = cents;
-    };
-
-    double getValue() const
-    {
-
-        int cents = this->cents;
-        long dollars = this->dollars;
-
-        int cnt = 0;
-        double total = 0.0;
-        double remainingCents = 0;
-
-        while (cents > 99)
-        {
-
-            if (cents % 100 == 0)
-            {
-                dollars += cents / 100;
-            }
-            else
-            {
-                dollars += cents / 100;
-                remainingCents += cents % 100;
-            }
-            cnt++;
-            cents /= 100;
-        }
-
-        if (cnt == 0)
-        {
-            remainingCents = cents;
-        }
-
-        total = dollars + (remainingCents / 100);
-
-        return total;
-    };
-
-    long getDollars() const
-    {
-        return dollars;
-    }
-
-    int getCents() const
-    {
-        return cents;
+        return amount;
     }
 };
 
-class CheckBook
+class Check
 {
 
 private:
-    int checkNumber;
-    int checkAmount;
+    int checkNum;
+    Money amount;
     bool isCashed;
-    // Money moneyObj;
 
 public:
-    // CheckBook(int checkNumber, int checkAmount, bool isCashed, const Money &moneyObj)
-    // {
-    //     this->checkNumber = checkNumber;
-    //     this->checkAmount = checkAmount;
-    //     this->isCashed = isCashed;
-    //     this->moneyObj = moneyObj;
-    // }
-    CheckBook(int checkNumber, int checkAmount, bool isCashed)
+    Check()
     {
-        this->checkNumber = checkNumber;
-        this->checkAmount = checkAmount;
+        checkNum = 0;
+        amount = 0.0;
+        isCashed = false;
+    }
+    Check(int checkNum, Money amount, bool isCashed)
+    {
+        this->checkNum = checkNum;
+        this->amount = amount;
         this->isCashed = isCashed;
+    }
+    ~Check()
+    {
     }
 
     int getCheckNumber() const
     {
-        return checkNumber;
+        return checkNum;
     }
 
-    int getCheckAmount() const
+    Money getCheckAmount() const
     {
-        return checkAmount;
+        return amount;
     }
 
     bool getIsCashed() const
     {
         return isCashed;
     }
+
+    void setCheckNumber(int checkNum)
+    {
+        this->checkNum = checkNum;
+    }
+
+    void setCheckAmount(Money amount)
+    {
+        this->amount = amount;
+    }
+
+    void setIsCashed(bool isCashed)
+    {
+        this->isCashed = isCashed;
+    }
 };
+
+bool getIsCashed(char cashedOrNotCashed)
+{
+
+    if (cashedOrNotCashed == 'Y')
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void getUserInput()
+{
+
+    int checkNum;
+    double amount;
+    char cashedOrNotCashed;
+    bool isCashed;
+    int exitProgramValue;
+    int numChecks;
+    int maxNumChecks;
+
+    cout << "Please enter the number of check you wish to deposit: ";
+    cin >> numChecks;
+
+    Check *check = new Check[numChecks];
+
+    for (int i = 0; i < numChecks; i++)
+    {
+        maxNumChecks++;
+
+        cout << "Please enter the check number: ";
+        cin >> checkNum;
+        check[i].setCheckNumber(checkNum);
+
+        cout << "Please enter the check amount: ";
+        cin >> amount;
+        check[i].setCheckAmount(amount);
+
+        cout << "Please enter if the check was cashed or not (Y = cashed, N = not cashed): ";
+        cin >> cashedOrNotCashed;
+
+        isCashed = getIsCashed(cashedOrNotCashed);
+
+        if (maxNumChecks == numChecks)
+        {
+            break;
+        }
+
+        check[i] = Check(checkNum, amount, isCashed);
+
+        cout << "If you'd like to exit the program please enter the value -1 other wise enter 0: ";
+        cin >> exitProgramValue;
+        cout << endl;
+
+        if (exitProgramValue == -1)
+        {
+            break;
+        }
+    }
+
+    for (int i = 0; i < numChecks; i++)
+    {
+        cout << "Check Number: " << check[i].getCheckNumber() << endl;
+    }
+
+    delete[] check;
+
+    // Check check = Check(checkNum, Money(amount), isCashed);
+
+    // cout << "Check Number: " << check.getCheckNumber() << endl;
+    // cout << "Check Amount: " << check.getCheckAmount().getAmount() << endl;
+    // cout << "Is Check Cashed: " << check.getIsCashed() << endl;
+}
 
 int main()
 {
 
-    Money money1 = Money(12, 1211);
-    // CheckBook checkBook = CheckBook(12345, 100, 1, money1);
-    CheckBook checkBook = CheckBook(12345, 100, 1);
-
-    cout << "Check Number: " << checkBook.getCheckNumber() << endl;
-    cout << "Check Amount: " << checkBook.getCheckAmount() << endl;
-    cout << "Is check cashed: " << checkBook.getIsCashed() << endl;
-
-    // Money money1 = Money(12, 1211);
-
-    // // cout << "Dollars: " << money1.getDollars() << endl;
-    // // cout << "Cents: " << money1.getCents() << endl;
-
-    // // cout << endl;
-
-    // cout << "Total Value: " << money1.getValue() << endl;
+    getUserInput();
 
     return 0;
 }
