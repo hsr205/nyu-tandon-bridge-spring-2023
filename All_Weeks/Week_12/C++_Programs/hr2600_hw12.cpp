@@ -1,4 +1,9 @@
 #include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <list>
+#include <map>
 
 using namespace std;
 
@@ -80,87 +85,184 @@ public:
     }
 };
 
-bool getIsCashed(char cashedOrNotCashed)
+string getDollarFormat(double doubleVal)
 {
+    ostringstream ss;
 
-    if (cashedOrNotCashed == 'Y')
+    if (doubleVal < 0)
     {
-        return true;
+        ss << fixed << setprecision(2) << "-$" << abs(doubleVal);
     }
     else
     {
-        return false;
+        ss << fixed << setprecision(2) << "$" << doubleVal;
     }
+
+    string result = ss.str();
+
+    return result;
 }
 
-void getUserInput()
+map<int, list<pair<double, bool>>> getCheckData()
 {
 
     int checkNum;
     double amount;
-    char cashedOrNotCashed;
     bool isCashed;
-    int exitProgramValue;
     int numChecks;
-    int maxNumChecks;
+    double sumCashedChecks;
+    double sumUnCashedChecks;
+    map<int, list<pair<double, bool>>> resultMap;
 
-    cout << "Please enter the number of check you wish to deposit: ";
+    cout << "Please enter the check number, amount of check [exclude the dollar sign] and whether or not the check was cashed (0 = No, 1 = Yes): " << endl;
+    cout << "Example input: " << endl;
+    cout << "9 for check number, 40.89 for check amount and 1 for a cashed check (9 40.89 1) " << endl;
+
+    cout << endl;
+
+    cout << "Please enter the number of check(s): ";
     cin >> numChecks;
 
     Check *check = new Check[numChecks];
 
     for (int i = 0; i < numChecks; i++)
     {
-        maxNumChecks++;
-
-        cout << "Please enter the check number: ";
         cin >> checkNum;
         check[i].setCheckNumber(checkNum);
 
-        cout << "Please enter the check amount: ";
         cin >> amount;
         check[i].setCheckAmount(amount);
 
-        cout << "Please enter if the check was cashed or not (Y = cashed, N = not cashed): ";
-        cin >> cashedOrNotCashed;
+        cin >> isCashed;
+        check[i].setIsCashed(isCashed);
 
-        isCashed = getIsCashed(cashedOrNotCashed);
-
-        if (maxNumChecks == numChecks)
+        if (isCashed == 0)
         {
-            break;
+            sumCashedChecks += amount;
+        }
+        else
+        {
+            sumUnCashedChecks += amount;
         }
 
         check[i] = Check(checkNum, amount, isCashed);
 
-        cout << "If you'd like to exit the program please enter the value -1 other wise enter 0: ";
-        cin >> exitProgramValue;
-        cout << endl;
-
-        if (exitProgramValue == -1)
-        {
-            break;
-        }
+        resultMap[checkNum].push_back(make_pair(amount, isCashed));
     }
 
-    for (int i = 0; i < numChecks; i++)
-    {
-        cout << "Check Number: " << check[i].getCheckNumber() << endl;
-    }
+    cout << endl;
+
+    cout << "The sum of cashed checks is: " << endl;
+    cout << getDollarFormat(sumCashedChecks) << endl;
+
+    cout << "The sum of un-cashed checks is: " << endl;
+    cout << getDollarFormat(sumUnCashedChecks) << endl;
 
     delete[] check;
 
-    // Check check = Check(checkNum, Money(amount), isCashed);
+    return resultMap;
+}
 
-    // cout << "Check Number: " << check.getCheckNumber() << endl;
-    // cout << "Check Amount: " << check.getCheckAmount().getAmount() << endl;
-    // cout << "Is Check Cashed: " << check.getIsCashed() << endl;
+void getDepositInput()
+{
+    int numDeposits;
+    double depositAmount;
+    double sumOfDeposits;
+
+    cout << endl;
+    cout << "Please enter deposits in the following format: ##.## " << endl;
+    cout << "Please enter the number of deposit(s): ";
+    cin >> numDeposits;
+
+    Money *deposit = new Money[numDeposits];
+
+    for (int i = 0; i < numDeposits; i++)
+    {
+        cin >> depositAmount;
+
+        sumOfDeposits += depositAmount;
+    }
+
+    cout << "The sum of the deposit(s) is: " << endl;
+    cout << getDollarFormat(sumOfDeposits) << endl;
+
+    delete[] deposit;
+}
+
+void getAccountBalanceData()
+{
+    double priorBalance;
+    double currentBalance;
+
+    /*
+        TODO: Create calculation for bankBalance value.
+    */
+    double bankBalance = 0;
+    cout << endl;
+    cout << "Please enter the prior balance amount in the following format: ##.##" << endl;
+    cin >> priorBalance;
+
+    cout << "Please enter the new balance according to the account holder in the following format: ##.##" << endl;
+    cin >> currentBalance;
+
+    cout << endl;
+
+    string bankBalanceStr = getDollarFormat(bankBalance);
+    string currentBalanceStr = getDollarFormat(currentBalance);
+    string resultDiff = getDollarFormat(bankBalance - currentBalance);
+
+    cout << "The balance according to the bank which includes only cleared checks is: " << bankBalanceStr << endl;
+    cout << "The difference between the account holders balance of " << currentBalanceStr << " and the bank balance of " << bankBalanceStr << " is: " << resultDiff << endl;
+}
+
+void getCheckResult(map<int, list<pair<double, bool>>> mapObj)
+{
+    cout << endl;
+
+    map<int, double> cashedChecksMap;
+    map<int, double> unCashedChecksMap;
+
+    for (auto &keyValue : mapObj)
+    {
+        list<pair<double, bool>> listVals = keyValue.second;
+
+        for (auto &pairVals : listVals)
+        {
+            if (pairVals.second)
+            {
+                cashedChecksMap[keyValue.first] = pairVals.first;
+            }
+            else
+            {
+                unCashedChecksMap[keyValue.first] = pairVals.first;
+            }
+        }
+    }
+
+    cout << "The cashed checks are: " << endl;
+
+    for (auto &keyValue : cashedChecksMap)
+    {
+        cout << "Check number: " << keyValue.first << " with the amount: " << getDollarFormat(keyValue.second) << endl;
+    }
+
+    cout << endl;
+
+    cout << "The un-cashed checks are: " << endl;
+
+    for (auto &keyValue : unCashedChecksMap)
+    {
+        cout << "Check number: " << keyValue.first << " with the amount: " << getDollarFormat(keyValue.second) << endl;
+    }
 }
 
 int main()
 {
 
-    getUserInput();
+    map<int, list<pair<double, bool>>> result = getCheckData();
+    getDepositInput();
+    getAccountBalanceData();
+    getCheckResult(result);
 
     return 0;
 }
