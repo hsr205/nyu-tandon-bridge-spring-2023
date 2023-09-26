@@ -56,7 +56,7 @@ bool isAnagram(map<char, int> map1, map<char, int> map2)
     return 0;
 }
 
-void getUserInput()
+void getCheckInput()
 {
 
     string stringInput1;
@@ -82,7 +82,7 @@ void getUserInput()
 
 int main()
 {
-    getUserInput();
+    getCheckInput();
 
     return 0;
 }

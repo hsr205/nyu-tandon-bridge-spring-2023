@@ -52,7 +52,7 @@ string replaceDigitStrings(string inputText)
     return newSentence;
 }
 
-void getUserInput()
+void getCheckInput()
 {
 
     string inputText;
@@ -68,7 +68,7 @@ void getUserInput()
 int main()
 {
 
-    getUserInput();
+    getCheckInput();
 
     return 0;
 }
