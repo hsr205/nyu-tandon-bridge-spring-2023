@@ -199,7 +199,7 @@ int getSumChecks(map<int, double> checksMap)
     {
         sumChecks += keyValue.second;
     }
-    
+
     return sumChecks;
 }
 
@@ -232,6 +232,14 @@ void getAccountBalanceData(double sumOfDeposits, map<int, double> cashedChecksMa
 
     cout << "The balance according to the bank which includes only cleared checks is: " << bankBalanceStr << endl;
     cout << "The difference between the account holders balance of " << currentBalanceStr << " and the bank balance of " << bankBalanceStr << " is: " << resultDiff << endl;
+}
+
+void displayCheckData(map<int, double> map)
+{
+    for (auto &keyValue : map)
+    {
+        cout << "Check number: " << keyValue.first << " with the amount: " << getDollarFormat(keyValue.second) << endl;
+    }
 }
 
 map<int, double> getCashedChecksMap(map<int, list<pair<double, bool>>> mapObj)
@@ -280,19 +288,13 @@ void getCheckResult(map<int, list<pair<double, bool>>> mapObj)
 
     cout << "The cashed checks are: " << endl;
 
-    for (auto &keyValue : cashedChecksMap)
-    {
-        cout << "Check number: " << keyValue.first << " with the amount: " << getDollarFormat(keyValue.second) << endl;
-    }
+    displayCheckData(cashedChecksMap);
 
     cout << endl;
 
     cout << "The un-cashed checks are: " << endl;
 
-    for (auto &keyValue : unCashedChecksMap)
-    {
-        cout << "Check number: " << keyValue.first << " with the amount: " << getDollarFormat(keyValue.second) << endl;
-    }
+    displayCheckData(unCashedChecksMap);
 }
 
 int main()
