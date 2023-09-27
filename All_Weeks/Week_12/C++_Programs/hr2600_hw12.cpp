@@ -163,7 +163,7 @@ map<int, list<pair<double, bool>>> getCheckData()
     return resultMap;
 }
 
-void getDepositInput()
+double getDepositInput()
 {
     int numDeposits;
     double depositAmount;
@@ -187,17 +187,34 @@ void getDepositInput()
     cout << getDollarFormat(sumOfDeposits) << endl;
 
     delete[] deposit;
+
+    return sumOfDeposits;
 }
 
-void getAccountBalanceData()
+int getSumChecks(map<int, double> checksMap)
 {
+    double sumChecks;
+
+    for (auto &keyValue : checksMap)
+    {
+        sumChecks += keyValue.second;
+    }
+    
+    return sumChecks;
+}
+
+void getAccountBalanceData(double sumOfDeposits, map<int, double> cashedChecksMap)
+{
+
     double priorBalance;
     double currentBalance;
+    double sumCashedChecks;
 
-    /*
-        TODO: Create calculation for bankBalance value.
-    */
-    double bankBalance = 0;
+    for (auto &keyValue : cashedChecksMap)
+    {
+        sumCashedChecks += keyValue.second;
+    }
+
     cout << endl;
     cout << "Please enter the prior balance amount in the following format: ##.##" << endl;
     cin >> priorBalance;
@@ -207,12 +224,34 @@ void getAccountBalanceData()
 
     cout << endl;
 
+    double bankBalance = priorBalance + sumOfDeposits - sumCashedChecks;
+
     string bankBalanceStr = getDollarFormat(bankBalance);
     string currentBalanceStr = getDollarFormat(currentBalance);
     string resultDiff = getDollarFormat(bankBalance - currentBalance);
 
     cout << "The balance according to the bank which includes only cleared checks is: " << bankBalanceStr << endl;
     cout << "The difference between the account holders balance of " << currentBalanceStr << " and the bank balance of " << bankBalanceStr << " is: " << resultDiff << endl;
+}
+
+map<int, double> getCashedChecksMap(map<int, list<pair<double, bool>>> mapObj)
+{
+    map<int, double> cashedChecksMap;
+
+    for (auto &keyValue : mapObj)
+    {
+        list<pair<double, bool>> listVals = keyValue.second;
+
+        for (auto &pairVals : listVals)
+        {
+            if (pairVals.second)
+            {
+                cashedChecksMap[keyValue.first] = pairVals.first;
+            }
+        }
+    }
+
+    return cashedChecksMap;
 }
 
 void getCheckResult(map<int, list<pair<double, bool>>> mapObj)
@@ -260,8 +299,9 @@ int main()
 {
 
     map<int, list<pair<double, bool>>> result = getCheckData();
-    getDepositInput();
-    getAccountBalanceData();
+    double sumOfDeposits = getDepositInput();
+    map<int, double> cashedChecksMap = getCashedChecksMap(result);
+    getAccountBalanceData(sumOfDeposits, cashedChecksMap);
     getCheckResult(result);
 
     return 0;
