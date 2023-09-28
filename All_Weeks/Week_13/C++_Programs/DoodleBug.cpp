@@ -1,23 +1,14 @@
-#include "Organism.h"
+#include "DoodleBug.h"
 #include <iostream>
 
-class DoodleBug : public Organism
-{
-private:
-public:
-    DoodleBug();
+void DoodleBug::move() {
+    std::cout << "DoodleBug is moving." << std::endl;
+}
 
-    void move() override
-    {
-        std::cout << "The DoodleBug is moving. " << std::endl;
-    };
-    void breed() override
-    {
-        std::cout << "The DoodleBug is breeding. " << std::endl;
-    };
+void DoodleBug::breed() {
+    std::cout << "DoodleBug is breeding." << std::endl;
+}
 
-    void starve()
-    {
-        std::cout << "The DoodleBug has starved. " << std::endl;
-    };
-};
+void DoodleBug::starve() {
+    std::cout << "DoodleBug is starving." << std::endl;
+}

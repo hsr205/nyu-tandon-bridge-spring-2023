@@ -6,7 +6,6 @@ class Organism
 
 public:
     Organism();
-    virtual ~Organism();
 
     virtual void move(){};
 

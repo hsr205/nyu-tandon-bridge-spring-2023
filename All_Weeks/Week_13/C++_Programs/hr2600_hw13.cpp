@@ -1,9 +1,10 @@
 #include <iostream>
-#include "Ant.cpp"
+#include "Ant.h"
 #include "Organism.h"
-#include "DoodleBug.cpp"
+#include "DoodleBug.h"
 
 using namespace std;
+
 
 int main()
 {
@@ -19,6 +20,9 @@ int main()
     doodleBug->move();
     doodleBug->breed();
     doodleBug->starve();
+
+    delete ant;
+    delete doodleBug;
 
     return 0;
 }
