@@ -1,4 +1,6 @@
 #include <iostream>
+#include <ctime>
+#include <cstdlib>
 #include <map>
 
 using namespace std;
@@ -16,11 +18,10 @@ public:
 class Ant : public Organism
 {
 private:
+    char symbol = 'o';
     map<int, int> positionMap;
 
 public:
-    // Ant();
-    // ~Ant();
     void move() override
     {
         cout << "Ant is moving." << endl;
@@ -30,16 +31,20 @@ public:
     {
         cout << "Ant is breeding." << endl;
     }
+
+    char getSymbol()
+    {
+        return this->symbol;
+    }
 };
 
 class DoodleBug : public Organism
 {
-    // private:
-    //     map<int, int> positionMap;
+private:
+    char symbol = 'X';
+    map<int, int> positionMap;
 
 public:
-    // DoodleBug();
-    // ~DoodleBug();
     void move() override
     {
         cout << "DoodleBug is moving." << endl;
@@ -53,25 +58,98 @@ public:
     {
         cout << "DoodleBug is starving." << endl;
     }
+
+    char getSymbol()
+    {
+        return this->symbol;
+    }
+};
+
+class GameBoard
+{
+private:
+    int rows = 20;
+    int columns = 20;
+    int maxAnts = 100;
+    int maxDoodleBugs = 5;
+
+public:
+    int getRows()
+    {
+        return this->rows;
+    }
+    int getColumns()
+    {
+        return this->columns;
+    }
+
+    char populateGameBoard(char matrix[][20], char antChar, char doodlebugChar)
+    {
+        srand(time(nullptr));
+
+        for (int i = 0; i < this->rows; ++i)
+        {
+            for (int j = 0; j < this->columns; ++j)
+            {
+                matrix[i][j] = '-';
+            }
+        }
+
+        for (int i = 0; i < maxDoodleBugs; ++i)
+        {
+            int randomRow = rand() % this->rows;
+            int randomColumn = rand() % this->columns;
+
+            for (int j = 0; j < maxDoodleBugs; ++j)
+            {
+                matrix[randomRow][randomColumn] = doodlebugChar;
+            }
+        }
+
+        for (int i = 0; i < maxAnts; ++i)
+        {
+            int randomRow = rand() % this->rows;
+            int randomColumn = rand() % this->columns;
+
+            for (int j = 0; j < maxAnts; ++j)
+            {
+                if (matrix[randomRow][randomColumn] != doodlebugChar)
+                {
+                    matrix[randomRow][randomColumn] = antChar;
+                }
+            }
+        }
+
+        return matrix[this->rows][this->columns];
+    };
+
+    void printGameBoard(char matrix[][20])
+    {
+        for (int i = 0; i < this->rows; ++i)
+        {
+            for (int j = 0; j < this->columns; ++j)
+            {
+                cout << matrix[i][j] << "  ";
+            }
+            cout << endl;
+        }
+    }
 };
 
 int main()
 {
 
-    Ant *ant = new Ant();
-    DoodleBug *doodleBug = new DoodleBug();
+    Ant ant;
+    DoodleBug doodleBug;
+    GameBoard gameBoard;
 
-    ant->move();
-    ant->breed();
+    char matrix[20][20];
 
-    cout << "----------------------------------" << endl;
+    char antSymbol = ant.getSymbol();
+    char doodlebugSymbol = doodleBug.getSymbol();
 
-    doodleBug->move();
-    doodleBug->breed();
-    doodleBug->starve();
-
-    delete ant;
-    delete doodleBug;
+    gameBoard.populateGameBoard(matrix, antSymbol, doodlebugSymbol);
+    gameBoard.printGameBoard(matrix);
 
     return 0;
 }
