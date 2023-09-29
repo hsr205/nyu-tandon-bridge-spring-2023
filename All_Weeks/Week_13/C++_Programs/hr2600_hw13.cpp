@@ -134,10 +134,7 @@ public:
         this->numTimeStep = numTimeStep;
     }
 
-    void move() override
-    {
-        cout << "DoodleBug is moving." << endl;
-    }
+    void move() override;
 
     void breed() override
     {
@@ -209,6 +206,65 @@ public:
     }
 };
 
+class Position
+{
+
+private:
+    char symbol;
+    int row;
+    int column;
+
+public:
+    Position();
+    Position(char symbol, int row, int column)
+    {
+        this->symbol = symbol;
+        this->row = row;
+        this->column = column;
+    };
+
+    char getSymbol()
+    {
+        return this->symbol;
+    }
+
+    int getRow()
+    {
+        return this->row;
+    }
+
+    int getColumn()
+    {
+        return this->column;
+    }
+
+    void setSymbol(char symbol)
+    {
+        this->symbol = symbol;
+    }
+
+    void setRow(int row)
+    {
+        this->row = row;
+    }
+    void setColumn(int column)
+    {
+        this->column = column;
+    }
+
+    /*
+    TODO: Review operator overloading
+*/
+    bool operator<(const Position &other) const
+    {
+        if (this->row != other.row)
+        {
+            return this->row < other.row;
+        }
+        return this->column < other.column;
+    }
+};
+
 class GameBoard
 {
 private:
@@ -220,24 +276,8 @@ private:
     Ant ant;
     DoodleBug doodleBug;
 
-public:
-    int getRows()
+    void populateAsEmptyGameBoard(char matrix[20][20])
     {
-        return this->rows;
-    }
-    int getColumns()
-    {
-        return this->columns;
-    }
-
-    char populateGameBoard(char matrix[20][20])
-    {
-
-        set<DoodleBug> doodleBugSet = doodleBug.getClassObjectSet();
-        set<Ant> antSet = ant.getClassObjectSet();
-
-        srand(time(nullptr));
-
         for (int i = 0; i < this->rows; ++i)
         {
             for (int j = 0; j < this->columns; ++j)
@@ -245,19 +285,12 @@ public:
                 matrix[i][j] = '-';
             }
         }
+    }
 
-        for (int i = 0; i < maxDoodleBugs; ++i)
-        {
-            int randomRow = rand() % this->rows;
-            int randomColumn = rand() % this->columns;
+    void populateGameBoardWithAnts(char matrix[20][20])
+    {
 
-            for (int j = 0; j < maxDoodleBugs; ++j)
-            {
-                matrix[randomRow][randomColumn] = doodleBug.getSymbol();
-                doodleBug.setClassObjectSet(doodleBugSet, DoodleBug(randomRow, randomColumn));
-            }
-        }
-
+        set<Ant> antSet = ant.getClassObjectSet();
         for (int i = 0; i < maxAnts; ++i)
         {
             int randomRow = rand() % this->rows;
@@ -272,16 +305,61 @@ public:
                 }
             }
         }
+    }
 
-        for (const DoodleBug &classObj : doodleBugSet)
+public:
+    int getRows()
+    {
+        return this->rows;
+    }
+    int getColumns()
+    {
+        return this->columns;
+    }
+
+    void populateGameBoardWithDoodleBugs(char matrix[20][20]);
+
+    int populateGameBoard(char matrix[20][20])
+    {
+
+        srand(time(nullptr));
+
+        populateAsEmptyGameBoard(matrix);
+        populateGameBoardWithDoodleBugs(matrix);
+        populateGameBoardWithAnts(matrix);
+
+        return 0;
+    };
+
+    void printGameBoard(char matrix[20][20])
+    {
+        cout << string(58, '=') << endl;
+        for (int i = 0; i < this->rows; ++i)
         {
-            cout << classObj.getRow() << "," << classObj.getColumn() << endl;
+            for (int j = 0; j < this->columns; ++j)
+            {
+                cout << matrix[i][j] << "  ";
+            }
+            cout << endl;
+        }
+        cout << string(58, '=') << endl;
+    }
+
+    bool exitProgram(string userInput, int &turnNum, bool isContinue)
+    {
+
+        if (userInput == "")
+        {
+            turnNum++;
+            cout << endl;
+        }
+        else if (userInput == "0")
+        {
+            isContinue = false;
         }
 
-        cout << string(58, '=') << endl;
-
-        return matrix[this->rows][this->columns];
-    };
+        return isContinue;
+    }
 
     void initializeSimulation()
     {
@@ -295,59 +373,79 @@ public:
         {
             cout << "Turn Number: " << turnNum << endl;
 
-            cout << string(58, '=') << endl;
-            for (int i = 0; i < this->rows; ++i)
-            {
-                for (int j = 0; j < this->columns; ++j)
-                {
-                    cout << matrix[i][j] << "  ";
-                }
-                cout << endl;
-            }
-            cout << string(58, '=') << endl;
+            printGameBoard(matrix);
 
             cout << "Proceed to next turn?" << endl;
             cout << "Press enter to proceed or 0 to end." << endl;
 
             getline(cin, userInput);
 
-            if (userInput == "")
-            {
-                turnNum++;
-                cout << endl;
-                continue;
-            }
-            else if (userInput == "0")
-            {
-                isContinue = false;
-            }
+            isContinue = exitProgram(userInput, turnNum, isContinue);
+        }
+    }
+};
+
+void GameBoard::populateGameBoardWithDoodleBugs(char matrix[20][20])
+{
+    // set<DoodleBug> doodleBugSet = doodleBug.getClassObjectSet();
+    set<Position> positionSet;
+    char doodleBugSymbol = doodleBug.getSymbol();
+
+    for (int i = 0; i < maxDoodleBugs; ++i)
+    {
+        int randomRow = rand() % this->rows;
+        int randomColumn = rand() % this->columns;
+
+        for (int j = 0; j < maxDoodleBugs; ++j)
+        {
+            matrix[randomRow][randomColumn] = doodleBugSymbol;
+            positionSet.insert(Position(doodleBugSymbol, randomRow, randomColumn));
         }
     }
 
-    // void printGameBoard()
+    // for (Position classObj : positionSet)
     // {
-    //     char matrix[20][20];
-    //     populateGameBoard(matrix);
-
-    //     cout << string(58, '=') << endl;
-    //     for (int i = 0; i < this->rows; ++i)
-    //     {
-    //         for (int j = 0; j < this->columns; ++j)
-    //         {
-    //             cout << matrix[i][j] << "  ";
-    //         }
-    //         cout << endl;
-    //     }
-    //     cout << string(58, '=') << endl;
+    //     cout << classObj.getSymbol() << "," << classObj.getRow() << "," << classObj.getColumn() << endl;
     // }
-};
+}
+
+void DoodleBug::move()
+{
+
+    // cout << "DoodleBug is moving." << endl;
+
+    // GameBoard gameBoard;
+
+    // char matrix[20][20];
+
+    // set<DoodleBug> classObjectSet = gameBoard.populateGameBoardWithDoodleBugs(matrix);
+
+    // for (const DoodleBug &classObj : classObjectSet)
+    // {
+    //     cout << classObj.getRow() << "," << classObj.getColumn() << endl;
+    // }
+
+    // cout << string(58, '=') << endl;
+}
 
 int main()
 {
 
+    DoodleBug doodleBug;
     GameBoard gameBoard;
 
+    doodleBug.move();
     gameBoard.initializeSimulation();
+
+    /*
+        TODO:
+
+            (1) Make sure to pass the positionSet collection as an arument across all the populating methods
+            (2) Once done make sure you can assess this set in the move() method
+            (3) With the positional data you can then detemine how the DoodleBugs will move
+            (4) Then how the ants will move
+            (5) Add the additional behaviours (breed, eat, starve, etc.)
+    */
 
     return 0;
 }
