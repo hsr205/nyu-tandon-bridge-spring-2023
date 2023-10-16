@@ -5,13 +5,83 @@
 
 using namespace std;
 
+class Position
+{
+
+private:
+    char symbol;
+    int row;
+    int column;
+
+public:
+    Position();
+    Position(char symbol, int row, int column)
+    {
+        this->symbol = symbol;
+        this->row = row;
+        this->column = column;
+    };
+
+    char getSymbol()
+    {
+        return this->symbol;
+    }
+
+    int getRow()
+    {
+        return this->row;
+    }
+
+    int getColumn()
+    {
+        return this->column;
+    }
+
+    void setSymbol(char symbol)
+    {
+        this->symbol = symbol;
+    }
+
+    void setRow(int row)
+    {
+        if (row < 0)
+        {
+            this->row = 0;
+        }
+        else if (row > 19)
+        {
+            this->row = 19;
+        }
+        else
+        {
+            this->row = row;
+        }
+    }
+    void setColumn(int column)
+    {
+        this->column = column;
+    }
+
+    /*
+    TODO: Review operator overloading
+*/
+    bool operator<(const Position &other) const
+    {
+        if (this->row != other.row)
+        {
+            return this->row < other.row;
+        }
+        return this->column < other.column;
+    }
+};
+
 class Organism
 {
 
 public:
     Organism(){};
 
-    virtual void move(){};
+    virtual void move(set<Position> positionSet){};
     virtual void breed(){};
 };
 
@@ -21,8 +91,6 @@ private:
     char symbol = 'o';
     int row;
     int column;
-    int numTimeStep;
-    set<Ant> classObjectSet;
 
 public:
     Ant(){};
@@ -32,14 +100,7 @@ public:
         this->column = column;
     }
 
-    Ant(int row, int column, int numTimeStep)
-    {
-        this->row = row;
-        this->column = column;
-        this->numTimeStep = numTimeStep;
-    }
-
-    void move() override
+    void move(set<Position> positionSet) override
     {
         cout << "Ant is moving." << endl;
     }
@@ -64,15 +125,6 @@ public:
         return this->column;
     }
 
-    set<Ant> getClassObjectSet()
-    {
-        return this->classObjectSet;
-    }
-
-    int getNumTimeStep() const
-    {
-        return this->numTimeStep;
-    }
 
     void setRow(int row)
     {
@@ -116,8 +168,6 @@ private:
     char symbol = 'X';
     int row;
     int column;
-    int numTimeStep;
-    set<DoodleBug> classObjectSet;
 
 public:
     DoodleBug(){};
@@ -127,14 +177,8 @@ public:
         this->column = column;
     }
 
-    DoodleBug(int row, int column, int numTimeStep)
-    {
-        this->row = row;
-        this->column = column;
-        this->numTimeStep = numTimeStep;
-    }
 
-    void move() override;
+    void move(set<Position> positionSet) override;
 
     void breed() override
     {
@@ -160,20 +204,6 @@ public:
         return this->column;
     }
 
-    int getNumTimeStep() const
-    {
-        return this->numTimeStep;
-    }
-
-    set<DoodleBug> getClassObjectSet()
-    {
-        return this->classObjectSet;
-    }
-
-    void setClassObjectSet(set<DoodleBug> &classObjectSet, DoodleBug doodleBug)
-    {
-        classObjectSet.insert(doodleBug);
-    }
 
     void setRow(int row)
     {
@@ -197,65 +227,6 @@ public:
         TODO: Review operator overloading
     */
     bool operator<(const DoodleBug &other) const
-    {
-        if (this->row != other.row)
-        {
-            return this->row < other.row;
-        }
-        return this->column < other.column;
-    }
-};
-
-class Position
-{
-
-private:
-    char symbol;
-    int row;
-    int column;
-
-public:
-    Position();
-    Position(char symbol, int row, int column)
-    {
-        this->symbol = symbol;
-        this->row = row;
-        this->column = column;
-    };
-
-    char getSymbol()
-    {
-        return this->symbol;
-    }
-
-    int getRow()
-    {
-        return this->row;
-    }
-
-    int getColumn()
-    {
-        return this->column;
-    }
-
-    void setSymbol(char symbol)
-    {
-        this->symbol = symbol;
-    }
-
-    void setRow(int row)
-    {
-        this->row = row;
-    }
-    void setColumn(int column)
-    {
-        this->column = column;
-    }
-
-    /*
-    TODO: Review operator overloading
-*/
-    bool operator<(const Position &other) const
     {
         if (this->row != other.row)
         {
@@ -290,7 +261,6 @@ private:
     void populateGameBoardWithAnts(char matrix[20][20])
     {
 
-        set<Ant> antSet = ant.getClassObjectSet();
         for (int i = 0; i < maxAnts; ++i)
         {
             int randomRow = rand() % this->rows;
@@ -301,7 +271,6 @@ private:
                 if (matrix[randomRow][randomColumn] != doodleBug.getSymbol())
                 {
                     matrix[randomRow][randomColumn] = ant.getSymbol();
-                    ant.setClassObjectSet(antSet, Ant(randomRow, randomColumn));
                 }
             }
         }
@@ -319,7 +288,7 @@ public:
 
     void populateGameBoardWithDoodleBugs(char matrix[20][20]);
 
-    int populateGameBoard(char matrix[20][20])
+    int populateEmptyGameBoard(char matrix[20][20])
     {
 
         srand(time(nullptr));
@@ -330,6 +299,31 @@ public:
 
         return 0;
     };
+
+    set<Position> getCharacterPositionData(char matrix[20][20])
+    {
+        set<Position> positionSet;
+        for (int i = 0; i < this->rows; ++i)
+        {
+            for (int j = 0; j < this->columns; ++j)
+            {
+                if (matrix[i][j] == 'X')
+                {
+                    positionSet.insert(Position('X', i, j));
+                }
+                else if (matrix[i][j] == 'o')
+                {
+                    positionSet.insert(Position('o', i, j));
+                }
+                else
+                {
+                    positionSet.insert(Position('-', i, j));
+                }
+            }
+        }
+
+        return positionSet;
+    }
 
     void printGameBoard(char matrix[20][20])
     {
@@ -345,12 +339,11 @@ public:
         cout << string(58, '=') << endl;
     }
 
-    bool exitProgram(string userInput, int &turnNum, bool isContinue)
+    bool exitProgram(string userInput, bool isContinue)
     {
 
         if (userInput == "")
         {
-            turnNum++;
             cout << endl;
         }
         else if (userInput == "0")
@@ -363,32 +356,62 @@ public:
 
     void initializeSimulation()
     {
-        int turnNum = 1;
+        DoodleBug doodleBug;
         string userInput;
         char matrix[20][20];
         bool isContinue = true;
-        populateGameBoard(matrix);
+        // populateEmptyGameBoard(matrix);
+        printGameBoard(matrix);
+        // set<Position> positionSet = getCharacterPositionData(matrix);
 
-        while (isContinue)
-        {
-            cout << "Turn Number: " << turnNum << endl;
+        // for (Position classObj : positionSet)
+        // {
+        //     cout << classObj.getSymbol() << "," << classObj.getRow() << "," << classObj.getColumn() << endl;
+        // }
 
-            printGameBoard(matrix);
+        // doodleBug.move(positionSet);
 
-            cout << "Proceed to next turn?" << endl;
-            cout << "Press enter to proceed or 0 to end." << endl;
+        // while (isContinue)
+        // {
+        //     // cout << "Turn Number: " << turnNum << endl;
 
-            getline(cin, userInput);
+        //     // getCharacterPositionData(matrix);
 
-            isContinue = exitProgram(userInput, turnNum, isContinue);
-        }
+        //     cout << "Proceed to next turn?" << endl;
+        //     cout << "Press enter to proceed or 0 to end." << endl;
+
+        //     getline(cin, userInput);
+
+        //     isContinue = exitProgram(userInput, isContinue);
+        // }
     }
+
+    // void initializeSimulation()
+    // {
+    //     int turnNum = 1;
+    //     string userInput;
+    //     char matrix[20][20];
+    //     bool isContinue = true;
+    //     populateEmptyGameBoard(matrix);
+
+    //     while (isContinue)
+    //     {
+    //         cout << "Turn Number: " << turnNum << endl;
+
+    //         getCharacterPositionData(matrix);
+
+    //         cout << "Proceed to next turn?" << endl;
+    //         cout << "Press enter to proceed or 0 to end." << endl;
+
+    //         getline(cin, userInput);
+
+    //         isContinue = exitProgram(userInput, turnNum, isContinue);
+    //     }
+    // }
 };
 
 void GameBoard::populateGameBoardWithDoodleBugs(char matrix[20][20])
 {
-    // set<DoodleBug> doodleBugSet = doodleBug.getClassObjectSet();
-    set<Position> positionSet;
     char doodleBugSymbol = doodleBug.getSymbol();
 
     for (int i = 0; i < maxDoodleBugs; ++i)
@@ -399,43 +422,64 @@ void GameBoard::populateGameBoardWithDoodleBugs(char matrix[20][20])
         for (int j = 0; j < maxDoodleBugs; ++j)
         {
             matrix[randomRow][randomColumn] = doodleBugSymbol;
-            positionSet.insert(Position(doodleBugSymbol, randomRow, randomColumn));
+        }
+    }
+}
+
+void DoodleBug::move(set<Position> positionSet)
+{
+
+    for (Position classObj : positionSet)
+    {
+        if (classObj.getSymbol() == 'X')
+        {
+            int rowValue = classObj.getRow();
+            cout << classObj.getSymbol() << "," << classObj.getRow() << "," << classObj.getColumn() << endl;
+            classObj.setRow(rowValue - 1);
         }
     }
 
-    // for (Position classObj : positionSet)
-    // {
-    //     cout << classObj.getSymbol() << "," << classObj.getRow() << "," << classObj.getColumn() << endl;
-    // }
-}
+    cout << string(58, '=') << endl;
 
-void DoodleBug::move()
-{
+    for (Position classObj : positionSet)
+    {
+        if (classObj.getSymbol() == 'X')
+        {
+            cout << classObj.getSymbol() << "," << classObj.getRow() << "," << classObj.getColumn() << endl;
+        }
+    }
 
-    // cout << "DoodleBug is moving." << endl;
-
-    // GameBoard gameBoard;
-
-    // char matrix[20][20];
-
-    // set<DoodleBug> classObjectSet = gameBoard.populateGameBoardWithDoodleBugs(matrix);
-
-    // for (const DoodleBug &classObj : classObjectSet)
-    // {
-    //     cout << classObj.getRow() << "," << classObj.getColumn() << endl;
-    // }
-
-    // cout << string(58, '=') << endl;
+    cout << string(58, '=') << endl;
 }
 
 int main()
 {
 
-    DoodleBug doodleBug;
-    GameBoard gameBoard;
+    // DoodleBug doodleBug;
+    // GameBoard gameBoard;
 
-    doodleBug.move();
-    gameBoard.initializeSimulation();
+    // char matrix[20][20];
+
+    // gameBoard.populateEmptyGameBoard(matrix);
+    // gameBoard.printGameBoard(matrix);
+
+    // set<Position> positionalSet = gameBoard.getCharacterPositionData(matrix);
+
+    // for (Position classObj : positionalSet)
+    // {
+    //     if (classObj.getSymbol() == 'X')
+    //     {
+    //         cout << classObj.getSymbol() << "," << classObj.getRow() << "," << classObj.getColumn() << endl;
+    //     }
+    // }
+
+    // for (Position classObj : positionalSet)
+    // {
+    //     if (classObj.getSymbol() == 'X')
+    //     {
+    //         cout << classObj.getSymbol() << "," << classObj.getRow() << "," << classObj.getColumn() << endl;
+    //     }
+    // }
 
     /*
         TODO:
