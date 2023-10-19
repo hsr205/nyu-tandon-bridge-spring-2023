@@ -7,6 +7,16 @@
 
 using namespace std;
 
+struct AllEmployeeData
+{
+    int id;
+    bool isDuplicate;
+    double hoursWorked;
+    double hourlyPay;
+    double totalPay;
+    string name;
+};
+
 class Employee
 {
 
@@ -166,80 +176,93 @@ public:
     }
 };
 
-struct AllEmployeeData
+class Utility
 {
-    int id;
-    bool isDuplicate;
-    double hoursWorked;
-    double hourlyPay;
-    double totalPay;
-    string name;
+
+public:
+    Utility(){};
+    ~Utility(){};
+
+    void populateResultMap(map<string, double> &resultMap, vector<AllEmployeeData> allEmployeeDataVector)
+    {
+
+        for (const AllEmployeeData &employee : allEmployeeDataVector)
+        {
+            if (employee.name != "Duplicate")
+            {
+                resultMap[employee.name] += employee.totalPay;
+            }
+        }
+    }
+
+    void populateAllEmployeeDataVector(vector<AllEmployeeData> &allEmployeeDataVector)
+    {
+
+        ifstream inputFile;
+        FileProcessing fileProcessing;
+
+        list<Employee> employeeList = fileProcessing.getEmployeeData(inputFile);
+        list<EmployeePayRoll> employeePayRollList = fileProcessing.getEmployeePayRollData(inputFile);
+
+        for (const Employee &employee : employeeList)
+        {
+
+            for (const EmployeePayRoll &employeePayRoll : employeePayRollList)
+            {
+
+                AllEmployeeData employeeData;
+
+                if (employee.getId() == employeePayRoll.getId())
+                {
+                    employeeData.id = employee.getId();
+                    employeeData.name = employee.getName();
+                    employeeData.hourlyPay = employee.getHourlyPay();
+                    employeeData.hoursWorked = employeePayRoll.getHoursWorked();
+                    employeeData.totalPay = employee.getHourlyPay() * employeePayRoll.getHoursWorked();
+                }
+
+                else
+                {
+                    employeeData.name = "Duplicate";
+                }
+
+                allEmployeeDataVector.push_back(employeeData);
+            }
+        }
+    }
+
+    void displayPayRollResults(map<string, double> &resultMap)
+    {
+
+        cout << endl;
+
+        cout << string(9, '*') << "Payroll Information" << string(8, '*') << endl;
+
+        for (const auto &keyValue : resultMap)
+        {
+            cout << keyValue.first << ", $" << keyValue.second << endl;
+        }
+
+        cout << string(9, '*') << "End Payroll" << string(14, '*') << endl;
+    }
 };
 
 int main()
 {
 
-    Employee employee;
-    ifstream inputFile;
-    FileProcessing fileProcessing;
-    EmployeePayRoll employeePayRoll;
+    Utility utility;
+    map<string, double> resultMap;
     vector<AllEmployeeData> allEmployeeDataVector;
 
-    list<Employee> employeeList = fileProcessing.getEmployeeData(inputFile);
-    list<EmployeePayRoll> employeePayRollList = fileProcessing.getEmployeePayRollData(inputFile);
+    utility.populateAllEmployeeDataVector(allEmployeeDataVector);
+    utility.populateResultMap(resultMap, allEmployeeDataVector);
 
-    for (const Employee &employee : employeeList)
-    {
+    utility.displayPayRollResults(resultMap);
 
-        for (const EmployeePayRoll &employeePayRoll : employeePayRollList)
-        {
-
-            AllEmployeeData employeeData;
-
-            if (employee.getId() == employeePayRoll.getId())
-            {
-                // cout << "Id: " << employee.getId() << endl;
-                employeeData.id = employee.getId();
-                employeeData.name = employee.getName();
-                employeeData.hourlyPay = employee.getHourlyPay();
-                employeeData.hoursWorked = employeePayRoll.getHoursWorked();
-                employeeData.totalPay = employee.getHourlyPay() * employeePayRoll.getHoursWorked();
-            }
-
-            else
-            {
-                employeeData.name = "Duplicate";
-            }
-
-            allEmployeeDataVector.push_back(employeeData);
-        }
-    }
-
-    map<string, double> resultMap;
-
-    for (const AllEmployeeData &employee : allEmployeeDataVector)
-    {
-        if (employee.name != "Duplicate")
-        {
-            resultMap[employee.name] += employee.totalPay;
-        }
-    }
-
-    cout << endl;
-
-    cout << string(9, '*') << "Payroll Information" << string(8, '*') << endl;
-    /*
-    // TODO: 
-        (1) Find a simple way to sort the map by value in descending order
-        (2) Abstract most of the implementations in the main method into separate classes
-    */
-
-    for (const auto &keyValue : resultMap)
-    {
-        cout << keyValue.first << ", $" << keyValue.second << endl;
-    }
-
-    cout << string(9, '*') << "End Payroll" << string(14, '*') << endl;
+    // /*
+    // // TODO:
+    //     (1) Find a simple way to sort the map by value in descending order
+    // */
 
     return 0;
 }
