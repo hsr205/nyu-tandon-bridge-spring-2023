@@ -12,10 +12,9 @@ private:
     double paymentOwed;
     double paymentAmount;
 
-    double getAveragePayment(list<Payments> paymentList)
+    void getAveragePayment(list<Payments> paymentList, double &averagePayment)
     {
         double paymentTotal = 0.0;
-        double averagePayment = 0.0;
 
         for (const Payments payment : paymentList)
         {
@@ -23,8 +22,6 @@ private:
         }
 
         averagePayment = paymentTotal / paymentList.size();
-
-        return averagePayment;
     }
 
 public:
@@ -61,17 +58,82 @@ public:
         paymentAmount = newPaymentAmount;
     }
 
-    void populatePaymentOwedField(list<Payments> &paymentList)
+    void populatePaymentOwedField(list<Payments> &paymentList, double &averagePayment)
     {
 
-        double averagePayment = getAveragePayment(paymentList);
-
-        cout << "Average Payment: $" << averagePayment << endl;
+        getAveragePayment(paymentList, averagePayment);
 
         for (Payments &payment : paymentList)
         {
-            payment.paymentOwed = averagePayment - payment.paymentAmount;
+            payment.paymentOwed = payment.paymentAmount - averagePayment;
         }
+    }
+
+    void populateListObjects(list<Payments> &paymentList, list<Payments> &paymentsOwedList, list<Payments> &paymentsToPayList)
+    {
+        for (const Payments payment : paymentList)
+        {
+
+            if (payment.getPaymentOwed() < 0)
+            {
+                paymentsToPayList.push_back(payment);
+            }
+            else if (payment.getPaymentOwed() > 0)
+            {
+                paymentsOwedList.push_back(payment);
+            }
+            else
+            {
+                cout << payment.getName() << ", you don't have to do anything." << endl;
+            }
+        }
+    }
+
+    void displayResults(list<Payments> &paymentsOwedList, list<Payments> &paymentsToPayList, double &averagePayment)
+    {
+        for (Payments &owes : paymentsToPayList)
+        {
+
+            while (owes.getPaymentOwed() < 0)
+            {
+
+                for (Payments &owed : paymentsOwedList)
+                {
+
+                    if (owed.getPaymentOwed() > 0 && owes.getPaymentOwed() != 0.0)
+                    {
+                        double transferAmount = min(-owes.getPaymentOwed(), owed.getPaymentOwed());
+
+                        double paymentToPay = owes.getPaymentOwed() + transferAmount;
+                        double paymentOwed = owed.getPaymentOwed() - transferAmount;
+
+                        owes.setPaymentOwed(paymentToPay);
+                        owed.setPaymentOwed(paymentOwed);
+
+                        cout << owes.getName() << ", you give " << owed.getName() << " $" << transferAmount << endl;
+
+                        if (owes.getPaymentOwed() == 0.0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+
+        cout << "In the end you should all have spent around $" << averagePayment << endl;
+    }
+
+    void displayPayments(list<Payments> listObject)
+    {
+        cout << string(20, '=') << endl;
+        for (const Payments payment : listObject)
+        {
+            cout << payment.getName() << " -> $" << payment.getPaymentAmount() << " -> $" << payment.getPaymentOwed() << endl;
+        }
+        cout << string(20, '=') << endl;
     }
 };
 
@@ -84,14 +146,14 @@ private:
 
         string fileName;
 
-        cout << "What is the file name / path?" << endl;
+        cout << "Enter the file name: ";
         cin >> fileName;
         inputFile.open(fileName);
 
         while (!inputFile)
         {
             cout << "ERROR OPENING FILE" << endl;
-            cout << "What is the file name / path?" << endl;
+            cout << "Enter the file name: ";
             cin >> fileName;
             inputFile.clear();
             inputFile.open(fileName);
@@ -102,7 +164,7 @@ public:
     FileProcessing(){};
     ~FileProcessing() = default;
 
-    void getDataFile(ifstream &inputFile, list<Payments> &paymentList)
+    void getFileData(ifstream &inputFile, list<Payments> &paymentList)
     {
         string name;
         double paymentAmount;
@@ -130,37 +192,16 @@ int main()
 {
     ifstream inputFile;
     Payments payments;
+    double averagePayment = 0.0;
     list<Payments> paymentList;
+    list<Payments> paymentsOwedList;
+    list<Payments> paymentsToPayList;
     FileProcessing fileProcessing;
 
-    fileProcessing.getDataFile(inputFile, paymentList);
-    payments.populatePaymentOwedField(paymentList);
-
-    // getPaymentOwed(paymentList);
-
-    /*
-    TODO:
-
-    (1) Compare the payment.paymentOwed values and find a way to repay
-        those that have negative values with those that have positive values
-    */
-
-    for (const Payments payment : paymentList)
-    {
-
-        if (payment.getPaymentOwed() < 0)
-        {
-            cout << payment.getName() << " is owed $" << payment.getPaymentOwed() << endl;
-        }
-        else if (payment.getPaymentOwed() > 0)
-        {
-            cout << payment.getName() << " owes $" << payment.getPaymentOwed() << endl;
-        }
-        else
-        {
-            cout << payment.getName() << ", doesn't have to do anything." << endl;
-        }
-    }
+    fileProcessing.getFileData(inputFile, paymentList);
+    payments.populatePaymentOwedField(paymentList, averagePayment);
+    payments.populateListObjects(paymentList, paymentsOwedList, paymentsToPayList);
+    payments.displayResults(paymentsOwedList, paymentsToPayList, averagePayment);
 
     return 0;
 }
