@@ -15,15 +15,19 @@ public:
     Queue() = default;
     ~Queue() = default;
 
-    void push(T newValue)
+    int front() const
+    {
+        return dataVector[index];
+    }
+
+    void enqueue(T newValue)
     {
         dataVector.push_back(newValue);
     }
 
-    void pop()
+    void dequeue()
     {
-        ++index;
-        dataVector.insert(dataVector.begin(), dataVector.begin() + index, dataVector.begin() + dataVector.size());
+        dataVector.erase(dataVector.begin());
     }
 
     bool isEmpty()
@@ -31,27 +35,13 @@ public:
         return dataVector.size() == 0;
     }
 
-    void resetVector()
+    int size()
     {
-        if (isEmpty(dataVector))
+        if (isEmpty())
         {
             dataVector.resize(1);
         }
+
+        return dataVector.size();
     }
 };
-
-int main()
-{
-
-    Queue<int> dataQueue;
-
-    dataQueue.push(3);
-
-    while(!dataQueue.isEmpty()){
-
-
-
-    }
-
-    return 0;
-}
