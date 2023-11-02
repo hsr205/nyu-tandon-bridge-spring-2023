@@ -45,3 +45,34 @@ public:
         return dataVector.size();
     }
 };
+
+int main()
+{
+
+    Queue<int> dataQueue;
+
+    dataQueue.enqueue(1);
+    dataQueue.enqueue(2);
+    dataQueue.enqueue(3);
+    dataQueue.enqueue(4);
+    dataQueue.enqueue(5);
+
+    cout << "Size: " << dataQueue.size() << endl;
+
+    dataQueue.dequeue();
+    dataQueue.dequeue();
+    dataQueue.dequeue();
+    dataQueue.dequeue();
+    dataQueue.dequeue();
+
+    cout << "Size: " << dataQueue.size() << endl;
+
+    // while (!dataQueue.isEmpty())
+    // {
+
+    //     cout << "Element: " << dataQueue.front() << endl;
+    //     dataQueue.dequeue();
+    // }
+
+    return 0;
+}
