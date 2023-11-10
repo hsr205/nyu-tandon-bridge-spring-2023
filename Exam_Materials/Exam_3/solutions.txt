@@ -1,0 +1,403 @@
+------------------------------------------
+(1) 
+
+D.  There is no mistake in the code;
+
+------------------------------------------
+(2) 
+
+Solution:
+
+D.  Tree
+
+------------------------------------------
+(3) 
+
+Solution:
+
+A.  Thing& operator=(const Thing& rhs)
+
+------------------------------------------
+(4) 
+
+Solution:
+
+ptr->member();
+
+------------------------------------------
+(5) 
+
+Solution:
+
+2 3 4 * + 5 6 7 / + +
+
+------------------------------------------
+(6) 
+
+Solution:
+
+cout << root->right->data << endl;
+
+------------------------------------------
+(7) 
+
+Given a pointer to the first node of a binary search tree in which duplicates are 
+allowed, explain in English an efficient solution for determining if there exist any 
+duplicates in the tree.  In your answer, provide the big-theta runtime of your algorithm 
+and discuss memory usage.
+
+Explanation:
+
+My process is going to use an in-order traversal of the tree. 
+If there is indeed a duplicate it will always be one of the children nodes 
+
+If it is on the left hand side of the tree it will always be the parents left node
+    This is true because the parent node on this side of the tree will always be greater than or equal to it's left most child.
+
+If it is on the right hand side of the tree it will always be the parents right node
+    This is true because the parent node on this side of the tree will always be less than or equal to it's right most child.
+
+i.e. 
+
+         10
+       /    \
+      5      20
+     / \    /   \
+    5   6  15    20
+
+
+I would then check the data value of the parent node against that of it's children. 
+Since I already know it has to be a child of the parent that would be the only comparision I need to make when conducting my in-order traversal.
+
+This would run in Theta(log n) time as that is the time it takes to traverse the tree in typical circumstances 
+and the memory usage would be minimal as the function output for such a task would stop as soon as there is a duplicate (the function evaluates to True).
+
+------------------------------------------
+(8) 
+
+Explanation:
+
+Knowing that a doubly linked list's node's have a data component, a pointer to the previous node and a pointer to the next node
+I would start by trying to traverse the doubly linked list forwards and comparing if the first node's next pointer does in fact point to the second node's data value.
+Then I would check if the second node's previous pointer does in fact point to the first node's data value. I would then iterate this process testing each of the previous and next pointers, 
+comparing if the values are pointing to the correct values in the previous and next nodes until the end of the doubly linked list.
+
+
+------------------------------------------
+(9) 
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+struct Student
+{
+    int id;
+    double score;
+};
+
+void getInputFile(ifstream &inputFile)
+{
+
+    string inputFileStr = "exam3.txt";
+
+    inputFile.open(inputFileStr);
+
+    cout << "INPUT FILE OPENED" << endl;
+}
+
+vector<Student> getInputFileData(ifstream &inputFile)
+{
+
+    getInputFile(inputFile);
+
+    int id;
+    double score;
+    vector<Student> result;
+
+    while (inputFile >> id >> score)
+    {
+
+        Student student;
+
+        student.id = id;
+        student.score = score;
+
+        result.push_back(student);
+    }
+
+    inputFile.close();
+
+    cout << "INPUT FILE CLOSED" << endl;
+
+    return result;
+}
+
+bool compareById(Student &a, Student &b)
+{
+    return a.id < b.id;
+}
+
+bool compareByScore(Student &a, Student &b)
+{
+    return a.score > b.score;
+}
+
+void sortDataById(vector<Student> &studentVector)
+{
+
+    sort(studentVector.begin(), studentVector.end(), compareById);
+}
+
+void sortDataByScore(vector<Student> &studentVector)
+{
+
+    sort(studentVector.begin(), studentVector.end(), compareByScore);
+}
+
+void writeToFile(ofstream &outPutFile, vector<Student> studentVector, string outPutFileName)
+{
+    cout << "OUTPUT FILE OPEN" << endl;
+
+    outPutFile.open(outPutFileName);
+
+    for (const Student obj : studentVector)
+    {
+
+        outPutFile << obj.id << "  " << obj.score << endl;
+    }
+
+    outPutFile.close();
+
+    cout << "OUTPUT FILE CLOSED" << endl;
+}
+
+int main()
+{
+    ifstream inputFile;
+    ofstream outPutFile;
+
+    string sortedByIdFileName = "sortedbyID.txt";
+    string sortedByScoreFileName = "sortedbyGrade.txt";
+
+    vector<Student> studentVector = getInputFileData(inputFile);
+
+    sortDataById(studentVector);
+    writeToFile(outPutFile, studentVector, sortedByIdFileName);
+
+    sortDataByScore(studentVector);
+    writeToFile(outPutFile, studentVector, sortedByScoreFileName);
+
+    return 0;
+}
+
+------------------------------------------
+(10) 
+
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Vehicle
+{
+
+private:
+    double toll = 0;
+    double total = 0.0;
+
+public:
+    Vehicle() = default;
+    ~Vehicle() = default;
+
+    void incurToll(double tollValue)
+    {
+        total += tollValue;
+    };
+
+    virtual double getToll() = 0;
+
+    virtual double getTollTotal() = 0;
+};
+
+class Car : public Vehicle
+{
+
+private:
+    double toll = 5.0;
+    double total = 5.0;
+
+public:
+    Car() = default;
+    ~Car() = default;
+
+    friend Vehicle;
+
+    double getToll() override
+    {
+        return toll;
+    }
+
+    double getTollTotal() override
+    {
+        return total;
+    };
+};
+
+class Truck : public Vehicle
+{
+
+private:
+    double toll = 25.0;
+    double total = 25.0;
+
+public:
+    Truck() = default;
+    ~Truck() = default;
+
+    double getToll() override
+    {
+        return toll;
+    }
+
+    double getTollTotal() override
+    {
+        return total;
+    };
+
+};
+
+template <typename T>
+class TollBooth
+{
+
+private:
+    double total = 0.0;
+
+public:
+    TollBooth() = default;
+    ~TollBooth() = default;
+
+    void processToll(T &vehicle)
+    {
+        total += vehicle.getToll();
+
+        vehicle.incurToll(total);
+    }
+
+    double getTotalToll()
+    {
+        return total;
+    }
+};
+
+void truckTest1()
+{
+    Truck truck1;
+    TollBooth<Vehicle> tollBooth1;
+    tollBooth1.processToll(truck1);
+    tollBooth1.processToll(truck1);
+
+    double truck1Total = tollBooth1.getTotalToll();
+
+    cout << "The total for truck1 is: " << truck1Total << endl;
+}
+
+void carTest1()
+{
+
+    Car car1;
+    Truck truck1;
+    TollBooth<Vehicle> tollBooth1;
+
+    tollBooth1.processToll(car1);
+    tollBooth1.processToll(car1);
+
+    double car1Total = tollBooth1.getTotalToll();
+
+    cout << "The total for car1 is: " << car1Total << endl;
+}
+
+void truckTest2()
+{
+    Truck truck2;
+    TollBooth<Vehicle> tollBooth2;
+    tollBooth2.processToll(truck2);
+    tollBooth2.processToll(truck2);
+    tollBooth2.processToll(truck2);
+    tollBooth2.processToll(truck2);
+    tollBooth2.processToll(truck2);
+    tollBooth2.processToll(truck2);
+    tollBooth2.processToll(truck2);
+
+    double truck1Total = tollBooth2.getTotalToll();
+
+    cout << "The total for truck2 is: " << truck1Total << endl;
+}
+
+void carTest2()
+{
+
+    Car car2;
+    TollBooth<Vehicle> tollBooth2;
+
+    tollBooth2.processToll(car2);
+    tollBooth2.processToll(car2);
+    tollBooth2.processToll(car2);
+    tollBooth2.processToll(car2);
+
+    double car1Total = tollBooth2.getTotalToll();
+
+    cout << "The total for car2 is: " << car1Total << endl;
+}
+
+void truckTest3()
+{
+    Truck truck3;
+    TollBooth<Vehicle> tollBooth3;
+    tollBooth3.processToll(truck3);
+
+    double truck1Total = tollBooth3.getTotalToll();
+
+    cout << "The total for truck3 is: " << truck1Total << endl;
+}
+
+void carTest3()
+{
+
+    Car car3;
+    TollBooth<Vehicle> tollBooth3;
+
+    tollBooth3.processToll(car3);
+    tollBooth3.processToll(car3);
+    tollBooth3.processToll(car3);
+    tollBooth3.processToll(car3);
+    tollBooth3.processToll(car3);
+    tollBooth3.processToll(car3);
+    tollBooth3.processToll(car3);
+    tollBooth3.processToll(car3);
+
+    double car1Total = tollBooth3.getTotalToll();
+
+    cout << "The total for car3 is: " << car1Total << endl;
+}
+
+int main()
+{
+
+    carTest1();
+    carTest2();
+    carTest3();
+
+    truckTest1();
+    truckTest2();
+    truckTest3();
+
+    return 0;
+}
+
+------------------------------------------
