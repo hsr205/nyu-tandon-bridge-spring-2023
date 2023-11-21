@@ -79,7 +79,7 @@ void printResult(int arr[], int *resultArray, const int ARRAY_SIZE)
     cout << endl;
 }
 
-void test1()
+void truckTest1()
 {
     cout << "Test Number 1:" << endl;
     cout << "-----------------------------------" << endl;
@@ -150,7 +150,7 @@ void test4()
 int main()
 {
 
-    test1();
+    truckTest1();
     test2();
     test3();
     test4();
